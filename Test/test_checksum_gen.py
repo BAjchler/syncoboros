@@ -4,7 +4,13 @@ from Client.checksum_gen import ChecksumGen
 
 
 class TestChecksumGenerator(unittest.TestCase):
+    """
+    Class with checksum generator tests.
+
+    """
     def test_sha256(self):
+        """Test checksum generation on a small file (< MAX_SIZE)"""
+
         file_name = "example.txt"
         with open(file_name, "w") as file:
             file.write("This is an example file!")
@@ -15,6 +21,8 @@ class TestChecksumGenerator(unittest.TestCase):
         print(f'generated checksum = {checksum}')
 
     def test_large_file_sha256(self):
+        """Test checksum generation on a large file (> MAX_SIZE)"""
+
         file_name = "big_file.txt"
         generator = ChecksumGen(file_name)
         with open(file_name, "w") as file:

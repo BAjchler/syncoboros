@@ -15,14 +15,6 @@ class ChecksumGen:
         Warning: changing this value will lock client out of joining a server in some cases.
         """
 
-    def get_path(self) -> str:
-        """
-        Return saved path to file.
-
-        :return: path to file
-        """
-        return self.__file_path
-
     def set_path(self, file_path: str):
         """
         Set path variable inside the generator object.

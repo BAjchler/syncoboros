@@ -40,7 +40,7 @@ class ConnectionServer:
         start_new_thread(self.client_handler, (client,))
 
 
-host = '127.0.0.1'
-port = 1233
-
-ConnectionServer(host, port)
+if __name__ == "__main__":
+    host = ''
+    port = 1233
+    ConnectionServer(host, port)

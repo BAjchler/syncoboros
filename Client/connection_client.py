@@ -36,11 +36,12 @@ class ConnectionClient:
         self.client_socket.close()
 
 
-host = '127.0.0.1'
-port = 1233
+if __name__ == "__main__":
+    host = '127.0.0.1'
+    port = 1233
 
-conn = ConnectionClient(host, port)
+    conn = ConnectionClient(host, port)
 
-conn.ping()
+    conn.ping()
 
-conn.close_connection()
+    conn.close_connection()

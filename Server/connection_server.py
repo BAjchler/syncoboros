@@ -43,5 +43,4 @@ class ConnectionServer:
 if __name__ == "__main__":
     host = ''
     port = 1233
-
     ConnectionServer(host, port)

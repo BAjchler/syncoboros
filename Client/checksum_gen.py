@@ -46,5 +46,3 @@ class ChecksumGen:
         except FileNotFoundError:
             print(f"File {self.__file_path} does not exist")
             return None
-
-

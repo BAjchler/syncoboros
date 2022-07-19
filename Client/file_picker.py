@@ -1,5 +1,5 @@
 from tkinter import filedialog
-import time
+
 
 class FilePicker:
     """

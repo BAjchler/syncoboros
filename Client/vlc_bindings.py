@@ -71,9 +71,11 @@ class VLCBindings:
             self.scale_bar.set(self.current_time//1000)
 
     def fade_in(self, event):
+        """Function that makes the control panel appear."""
         self.root.attributes("-alpha", 1)
 
     def fade_out(self, event):
+        """Function that hides the control panel."""
         if not self.suppress_hide:
             self.root.attributes("-alpha", 0.005)
 
@@ -87,10 +89,12 @@ class VLCBindings:
         self.scroll = False
 
     def suppress_hide_on(self, event):
+        """Function that disables auto-hide of the control panel."""
         self.suppress_hide = True
         self.root.attributes("-alpha", 1)
 
     def suppress_hide_off(self, event):
+        """Function that enables auto-hide of the control panel."""
         self.suppress_hide = False
         self.root.attributes("-alpha", 0.005)
 

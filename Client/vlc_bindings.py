@@ -70,6 +70,15 @@ class VLCBindings:
         if not self.scroll:
             self.scale_bar.set(self.current_time//1000)
 
+    def fade_in(self, event):
+        """Function that makes the control panel appear."""
+        self.root.attributes("-alpha", 1)
+
+    def fade_out(self, event):
+        """Function that hides the control panel."""
+        if not self.suppress_hide:
+            self.root.attributes("-alpha", 0.005)
+
     def suppress_scroll(self, event):
         """Function that disables resetting of the scale bar to previous position."""
         self.scroll = True
@@ -79,6 +88,16 @@ class VLCBindings:
         self.player.set_time(self.scale_bar.get() * 1000)
         self.scroll = False
 
+    def suppress_hide_on(self, event):
+        """Function that disables auto-hide of the control panel."""
+        self.suppress_hide = True
+        self.root.attributes("-alpha", 1)
+
+    def suppress_hide_off(self, event):
+        """Function that enables auto-hide of the control panel."""
+        self.suppress_hide = False
+        self.root.attributes("-alpha", 0.005)
+
     def __init__(self, path_to_video: str):
         """Initalizes a VLC instance and a control panel to interact with playback
         :param path_to_video: path to media
@@ -87,31 +106,38 @@ class VLCBindings:
         self.instance = vlc.Instance()
         self.media = self.instance.media_new(path_to_video)
         self.player = self.instance.media_player_new()
-        self.scroll = False
-
         self.current_time = ""
 
         self.player.set_media(self.media)
-
         self.player.play()
+
         self.event_manager = self.player.event_manager()
         self.event_manager.event_attach(vlc.EventType(268), self.pos_callback)
 
         self.duration = self.media.get_duration()
 
         #Initalize control panel to manage audio/video playback
-        root = tk.Tk()
+        self.root = tk.Tk()
+
+        self.scroll = False
+        self.suppress_hide = False
+
+        self.root.attributes("-topmost", True)
+        self.root.bind("<Enter>", self.fade_in)
+        self.root.bind("<Leave>", self.fade_out)
+        self.root.bind("<FocusIn>", self.suppress_hide_on)
+        self.root.bind("<FocusOut>", self.suppress_hide_off)
 
         play_image = tk.PhotoImage(file=r"..//gui_images//play_button.png")
         pause_image = tk.PhotoImage(file=r"..//gui_images//pause_button.png")
         ff_image = tk.PhotoImage(file=r"..//gui_images//ff_button.png")
         rev_image = tk.PhotoImage(file=r"..//gui_images//rev_button.png")
 
-        self.play_button = tk.Button(root, text="play", command=self.resume_playback, image=play_image)
-        self.pause_button = tk.Button(root, text="pause", command=self.pause_playback, image=pause_image)
-        self.fast_forward = tk.Button(root, text="skip", command=self.skip_5_sec, image=ff_image)
-        self.rewind = tk.Button(root, text="rewind", command=self.rewind_5_sec, image=rev_image)
-        self.scale_bar = tk.Scale(root, from_=0, to=(self.duration//1000), orient="horizontal", showvalue=False)
+        self.play_button = tk.Button(self.root, text="play", command=self.resume_playback, image=play_image)
+        self.pause_button = tk.Button(self.root, text="pause", command=self.pause_playback, image=pause_image)
+        self.fast_forward = tk.Button(self.root, text="skip", command=self.skip_5_sec, image=ff_image)
+        self.rewind = tk.Button(self.root, text="rewind", command=self.rewind_5_sec, image=rev_image)
+        self.scale_bar = tk.Scale(self.root, from_=0, to=(self.duration//1000), orient="horizontal", showvalue=False)
         self.scale_bar.bind("<ButtonRelease-1>", self.move_scroll)
         self.scale_bar.bind("<Button-1>", self.suppress_scroll)
         self.current_time_label = tk.Label(text=self.current_time)

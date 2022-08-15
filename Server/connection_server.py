@@ -142,15 +142,17 @@ class ConnectionServer:
             elif message == "CHANGE_OWNER":
                 data = connection.recv(2048)
                 new_owner = data.decode('utf-8')
-                if client.get_client_name() == self.room_manager.get_room(client.get_room_name()).get_owner():
+                if not client.get_room_name() == "" and client.get_client_name() == self.room_manager.get_room(client.get_room_name()).get_owner():
                     self.change_room_owner(client.get_room_name(), new_owner)
                     self.send_response(connection, "changed room owner")
+
                 else:
                     self.send_response(connection, "did not change room owner")
 
             elif message == 'END_CONNECTION':
                 self.client_leave(client)
                 break
+        self.room_manager.delete_client(client.get_client_name())
         connection.close()
 
     def accept_connections(self):

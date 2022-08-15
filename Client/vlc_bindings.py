@@ -102,7 +102,7 @@ class VLCBindings:
         """Initalizes a VLC instance and a control panel to interact with playback
         :param path_to_video: path to media
         """
-        #Initialize VLC instance, media, and an event manager
+        # Initialize VLC instance, media, and an event manager
         self.instance = vlc.Instance()
         self.media = self.instance.media_new(path_to_video)
         self.player = self.instance.media_player_new()
@@ -116,7 +116,7 @@ class VLCBindings:
 
         self.duration = self.media.get_duration()
 
-        #Initalize control panel to manage audio/video playback
+        # Initialize control panel to manage audio/video playback
         self.root = tk.Tk()
 
         self.scroll = False
@@ -128,10 +128,10 @@ class VLCBindings:
         self.root.bind("<FocusIn>", self.suppress_hide_on)
         self.root.bind("<FocusOut>", self.suppress_hide_off)
 
-        play_image = tk.PhotoImage(file=r"..//gui_images//play_button.png")
-        pause_image = tk.PhotoImage(file=r"..//gui_images//pause_button.png")
-        ff_image = tk.PhotoImage(file=r"..//gui_images//ff_button.png")
-        rev_image = tk.PhotoImage(file=r"..//gui_images//rev_button.png")
+        play_image = tk.PhotoImage(file=r"gui_images//play_button.png")
+        pause_image = tk.PhotoImage(file=r"gui_images//pause_button.png")
+        ff_image = tk.PhotoImage(file=r"gui_images//ff_button.png")
+        rev_image = tk.PhotoImage(file=r"gui_images//rev_button.png")
 
         self.play_button = tk.Button(self.root, text="play", command=self.resume_playback, image=play_image)
         self.pause_button = tk.Button(self.root, text="pause", command=self.pause_playback, image=pause_image)

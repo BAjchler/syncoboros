@@ -1,6 +1,10 @@
 import socket
 import datetime
 
+import file_picker
+from view import View
+import checksum_gen
+
 
 class ConnectionClient:
     """
@@ -20,7 +24,8 @@ class ConnectionClient:
         Sends the client name to the server
         """
         while True:
-            nickname = input("pleas input your nickname")
+            View.ask_for_nickname()
+            nickname = input()
             self.client_socket.send(str.encode(nickname))
 
             res = self.client_socket.recv(2048)
@@ -55,7 +60,9 @@ class ConnectionClient:
                 i = input("please input room name")
                 self.client_socket.send(str.encode(i))
             elif res == 'SEND_CHECKSUM':
-                self.client_socket.send(str.encode('7s7'))
+                picker = file_picker.FilePicker()
+                generator = checksum_gen.ChecksumGen(picker.pick_file())
+                self.client_socket.send(str.encode(generator.generate_checksum()))
             elif res == "room created successfully":
                 print(res)
                 break
@@ -74,7 +81,9 @@ class ConnectionClient:
                 i = input("please input room name")
                 self.client_socket.send(str.encode(i))
             elif res == 'SEND_CHECKSUM':
-                self.client_socket.send(str.encode('7s7'))
+                picker = file_picker.FilePicker()
+                generator = checksum_gen.ChecksumGen(picker.pick_file())
+                self.client_socket.send(str.encode(generator.generate_checksum()))
             else:
                 print(res)
                 break

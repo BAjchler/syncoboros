@@ -6,8 +6,7 @@ class Settings:
     def __init__(self):
         self.__DEFAULT_SETTINGS = {
             "IP_address": "127.0.0.1",
-            "port": "1233",
-            "nickname": "default"
+            "port": 1233
         }
         self.__settings = None
 
@@ -31,22 +30,12 @@ class Settings:
 
     def set_port(self, new_port: str):
         if new_port.isnumeric() and 0 < int(new_port) < 65536:
-            self.__settings["port"] = new_port
+            self.__settings["port"] = int(new_port)
         else:
             raise Exception("Port contains illegal characters or is out of range")
 
-    def get_nickname(self):
-        return self.__settings["nickname"]
-
-    def set_nickname(self, new_nickname):
-        self.__settings["nickname"] = new_nickname
-
-    def change_setting(self, key, value):
-        self.__settings[key] = value
-
-    def update_settings(self, key, value):
+    def update_settings(self):
         with open("settings.json", 'w') as settings_file:
-            self.change_setting(key, value)
             json.dump(self.get_current_settings(), settings_file)
 
     def create_settings(self):

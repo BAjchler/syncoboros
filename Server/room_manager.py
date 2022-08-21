@@ -56,6 +56,12 @@ class RoomManager:
             for room in self.__rooms:
                 room.show_room()
 
+    def get_rooms_data(self):
+        all_rooms = list()
+        for room in self.__rooms:
+            all_rooms.append(room.get_room_data())
+        return all_rooms
+
     def add_client(self, client_name):
         """
         Adds a client to the list

@@ -1,6 +1,7 @@
 import settings
 from view import View
 import connection_client
+from user import *
 
 
 def get_connection_info(settings_manager: settings.Settings):
@@ -31,20 +32,59 @@ def get_connection_info(settings_manager: settings.Settings):
         settings_manager.update_settings()
 
 
-def server_queries(conn: connection_client.ConnectionClient):
+def lobby_options(conn: connection_client.ConnectionClient, user_input: str, user: User):
+    match user_input:
+        case "create":
+            user.set_state(State.LOBBY)
+            if conn.create_room():
+                user.set_state(State.ROOM_NOT_PLAYING)
+        case "join":
+            user.set_state(State.LOBBY)
+            if conn.join_room():
+                user.set_state(State.ROOM_NOT_PLAYING)
+        case "show":
+            conn.show_rooms()
+        case "ping":
+            conn.ping()
+        case "end":
+            return False
+    return True
+
+
+def room_options(conn: connection_client.ConnectionClient, user_input: str, user: User):
+    match user_input:
+        case "create":
+            user.set_state(State.LOBBY)
+            if conn.create_room():
+                user.set_state(State.ROOM_NOT_PLAYING)
+        case "join":
+            user.set_state(State.LOBBY)
+            if conn.join_room():
+                user.set_state(State.ROOM_NOT_PLAYING)
+        case "leave":
+            user.set_state(State.LOBBY)
+            conn.leave_room()
+        case "show":
+            pass
+            # TODO: PRINT CURRENT ROOM
+        case "end":
+            return False
+    return True
+
+
+def server_queries(conn: connection_client.ConnectionClient, user: User):
     while True:
-        View.print_main_lobby_options()
+        View.print_current_options(user.get_state())
         user_input = input()
-        match user_input:
-            case "create":
-                conn.create_room()
-            case "join":
-                conn.join_room()
-            case "show":
-                # TODO Get room list
+        match user.get_state():
+            case State.LOBBY:
+                if not lobby_options(conn, user_input, user):
+                    return
+            case State.ROOM_NOT_PLAYING:
+                if not room_options(conn, user_input, user):
+                    return
+            case State.ROOM_PLAYING:
                 pass
-            case "end":
-                return
 
 
 def server_connection():
@@ -52,7 +92,8 @@ def server_connection():
         return
     conn = connection_client.ConnectionClient(Settings_manager.get_IP_address(), Settings_manager.get_port())
     conn.send_nickname()
-    server_queries(conn)
+    user = User()
+    server_queries(conn, user)
     conn.close_connection()
 
 

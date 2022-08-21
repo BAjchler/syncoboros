@@ -1,6 +1,7 @@
 import socket
 from _thread import *
 from threading import Thread
+import json
 
 from Server.client import Client
 from Server.room import Room
@@ -91,8 +92,10 @@ class ConnectionServer:
         room_name, room_checksum = self.retrieve_data(connection)
         if not self.room_manager.check_room_name(room_name):
             client.join_room(room_name)
-            self.room_manager.get_room(room_name).join_room(client.get_client_name(), room_checksum)
-            self.send_response(connection, "joined room successfully")
+            if self.room_manager.get_room(room_name).join_room(client.get_client_name(), room_checksum):
+                self.send_response(connection, "joined room successfully")
+            else:
+                self.send_response(connection, "incorrect checksum")
         else:
             self.send_response(connection, "room has not been found")
 
@@ -118,6 +121,11 @@ class ConnectionServer:
                     self.room_manager.get_room(client.get_room_name()).owner_leave()
             client.delete_room_name()
 
+    def show_rooms(self, connection):
+        data = str.encode(json.dumps(self.room_manager.get_rooms_data()))
+        self.send_response(connection, str(len(data)))
+        connection.sendall(data)
+
     def client_handler(self, connection):
         """
         Method that keeps the server and client connected
@@ -138,6 +146,12 @@ class ConnectionServer:
             elif message == 'JOIN_ROOM':
                 self.client_leave(client)
                 self.join_room(connection, client)
+
+            elif message == 'LEAVE_ROOM':
+                self.client_leave(client)
+
+            elif message == 'SHOW_ROOMS':
+                self.show_rooms(connection)
 
             elif message == "CHANGE_OWNER":
                 data = connection.recv(2048)

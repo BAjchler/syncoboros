@@ -1,5 +1,3 @@
-
-
 class Room:
     """
     Room class that stores room data
@@ -11,12 +9,16 @@ class Room:
         self.__room_members_list: list[str] = []
         self.__room_members_list.append(self.__room_owner)
 
-    def join_room(self, client_name: str, client_checksum: str):
+    def join_room(self, client_name: str, client_checksum: str) -> bool:
         """
         Adds a client to the room
+
+        :return: checksum equality
         """
         if client_checksum == self.__checksum:
             self.__room_members_list.append(client_name)
+            return True
+        return False
 
     def change_room_owner(self, new_owner):
         """
@@ -47,6 +49,14 @@ class Room:
         print("room name: ", self.__room_name)
         print("room owner: ", self.__room_owner)
         print("room members:", self.__room_members_list)
+
+    def get_room_data(self):
+        room_dict = {
+            'room name': self.__room_name,
+            'room owner': self.__room_owner,
+            'room members': len(self.__room_members_list)
+        }
+        return room_dict
 
     def get_room_name(self):
         """

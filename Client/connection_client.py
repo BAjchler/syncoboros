@@ -1,5 +1,6 @@
 import socket
 import datetime
+import json
 
 import file_picker
 from view import View
@@ -43,10 +44,14 @@ class ConnectionClient:
         self.client_socket.send(str.encode('PING'))
         response = self.client_socket.recv(2048)
 
-        print(response.decode('utf-8'))
+        # print(response.decode('utf-8'))
         time_2 = datetime.datetime.now()
-        print("%s:%s:%s" % (time_1.minute, time_1.second, time_1.microsecond))
-        print("%s:%s:%s" % (time_2.minute, time_2.second, time_2.microsecond))
+        # print("%s:%s:%s" % (time_1.minute, time_1.second, time_1.microsecond))
+        # print("%s:%s:%s" % (time_2.minute, time_2.second, time_2.microsecond))
+        time_res = time_2 - time_1
+        delay = int(time_res.total_seconds()*1000)
+        View.print_delay(delay)
+        return delay
 
     def create_room(self):
         """
@@ -65,9 +70,10 @@ class ConnectionClient:
                 self.client_socket.send(str.encode(generator.generate_checksum()))
             elif res == "room created successfully":
                 print(res)
-                break
+                return True
             else:
                 print(res)
+                return False
 
     def join_room(self):
         """
@@ -84,9 +90,25 @@ class ConnectionClient:
                 picker = file_picker.FilePicker()
                 generator = checksum_gen.ChecksumGen(picker.pick_file())
                 self.client_socket.send(str.encode(generator.generate_checksum()))
+            elif res == 'joined room successfully':
+                print(res)
+                return True
             else:
                 print(res)
-                break
+                return False
+
+    def leave_room(self):
+        self.client_socket.send(str.encode('LEAVE_ROOM'))
+
+    def show_rooms(self):
+        self.client_socket.send(str.encode('SHOW_ROOMS'))
+        message_len = int(self.client_socket.recv(2048))
+        package_num = -(message_len // -2048)  # Upside-down floor division, to determine number of iterations.
+        rooms_bytes = bytearray()
+        for i in range(0, package_num):
+            rooms_bytes += self.client_socket.recv(2048)
+        all_rooms = json.loads(rooms_bytes.decode('utf-8'))
+        View.print_rooms(all_rooms)
 
     def change_owner(self):
         """

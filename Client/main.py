@@ -91,8 +91,8 @@ def server_connection():
     if not get_connection_info(Settings_manager):
         return
     conn = connection_client.ConnectionClient(Settings_manager.get_IP_address(), Settings_manager.get_port())
-    conn.send_nickname()
-    user = User()
+    nickname = conn.send_nickname()
+    user = User(nickname)
     server_queries(conn, user)
     conn.close_connection()
 

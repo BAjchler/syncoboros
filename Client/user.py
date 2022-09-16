@@ -9,8 +9,12 @@ class State(Enum):
 
 class User:
 
-    def __init__(self):
+    def __init__(self, nickname):
         self.state = State.LOBBY
+        self.nick = nickname
+
+    def get_nickname(self):
+        return self.nick
 
     def get_state(self):
         return self.state

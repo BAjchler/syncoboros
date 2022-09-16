@@ -20,7 +20,7 @@ class ConnectionClient:
         except socket.error as e:
             print(str(e))
 
-    def send_nickname(self):
+    def send_nickname(self) -> str:
         """
         Sends the client name to the server
         """
@@ -33,7 +33,7 @@ class ConnectionClient:
             response = res.decode('utf-8')
             print(response)
             if response == "your nickname is set":
-                break
+                return nickname
 
     def ping(self):
         """

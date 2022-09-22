@@ -30,31 +30,9 @@ class ClientConnectionUdp:
             print(client_msg)
 
 
-def room():
-    while True:
-        e = input("action")
-        if e == "pause":
-            message = "pause"
-            con_udp.send(message)
-        if e == "play":
-            message = "play"
-            con_udp.send(message)
-        if e == "skip":
-            message = "skip"
-            con_udp.send(message)
-        if e == "rewind":
-            message = "rewind"
-            con_udp.send(message)
 
 
-if __name__ == "__main__":
-    con_udp = ClientConnectionUdp()
-    t1 = Thread(target=con_udp.listen)
-    t2 = Thread(target=room)
-    t1.start()
-    t2.start()
-    t1.join()
-    t2.join()
+
 
 
 

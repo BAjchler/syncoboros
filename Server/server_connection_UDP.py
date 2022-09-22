@@ -1,13 +1,15 @@
 import socket
 from threading import Thread
 
+from Server.ip_users import IpUsers
+
 
 class ServerConnectionUdp:
-    def __init__(self):
+    def __init__(self, ip_users):
         ip = "127.0.0.1"
         port = 20001
         self.buffer_size = 1024
-
+        self.ip_users: IpUsers = ip_users
         self.UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         self.UDPServerSocket.bind((ip, port))
 
@@ -20,13 +22,16 @@ class ServerConnectionUdp:
             bytes_address_pair = self.UDPServerSocket.recvfrom(self.buffer_size)
 
             message = bytes_address_pair[0]
-
             address = bytes_address_pair[1]
 
             client_msg = message.decode()
 
-            print(client_msg)
+            client_name, client_message = client_msg.split("\n")
+            print(client_name)
+            print(client_message)
 
+            print(self.ip_users.check_user(client_name))
+            print(address)
             if client_msg == "pause":
                 message_2 = "video is paused"
                 self.send(message_2, address)
@@ -41,10 +46,3 @@ class ServerConnectionUdp:
                 message_2 = "video is rewound 5 sec"
                 self.send(message_2, address)
 
-
-if __name__ == "__main__":
-    con_udp = ServerConnectionUdp()
-
-    t1 = Thread(target=con_udp.listen)
-    t1.start()
-    t1.join()

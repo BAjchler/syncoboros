@@ -3,8 +3,10 @@ from _thread import *
 from threading import Thread
 
 from Server.client import Client
+from Server.ip_users import IpUsers
 from Server.room import Room
 from Server.room_manager import RoomManager
+from Server.server_connection_UDP import ServerConnectionUdp
 
 
 class ConnectionServer:
@@ -20,14 +22,20 @@ class ConnectionServer:
         except socket.error as e:
             print(str(e))
         self.server_socket.listen()
+        self.ip_user = IpUsers()
+        conn_udp = ServerConnectionUdp(self.ip_user)
 
         t1 = Thread(target=self.room_manager.show_rooms)
         t2 = Thread(target=self.accept_connections)
+        t3 = Thread(target=conn_udp.listen)
+
         t1.start()
         t2.start()
+        t3.start()
 
         t1.join()
         t2.join()
+        t3.join()
 
     def retrieve_client_name(self, connection):
         """
@@ -118,11 +126,13 @@ class ConnectionServer:
                     self.room_manager.get_room(client.get_room_name()).owner_leave()
             client.delete_room_name()
 
-    def client_handler(self, connection):
+    def client_handler(self, connection, address):
         """
         Method that keeps the server and client connected
         """
         nickname = self.retrieve_client_name(connection)
+        self.ip_user.add_user(nickname, address)
+
         client = Client(nickname)
         while True:
             data = connection.recv(2048)
@@ -162,7 +172,8 @@ class ConnectionServer:
         while True:
             client, address = self.server_socket.accept()
             print('Connected to: ' + address[0] + ':' + str(address[1]))
-            start_new_thread(self.client_handler, (client,))
+
+            start_new_thread(self.client_handler, (client, address))
 
 
 if __name__ == "__main__":
